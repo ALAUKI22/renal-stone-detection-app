@@ -1,6 +1,8 @@
 import io
+import os
 import cv2
 import base64
+import gdown
 import torch
 import numpy as np
 import streamlit as st
@@ -27,7 +29,6 @@ from reportlab.platypus import (
 # =========================================================
 st.set_page_config(
     page_title="Renal Stone Detection Demo",
-    page_icon="🩺",
     layout="wide"
 )
 
@@ -352,15 +353,27 @@ st.markdown("""
 # =========================================================
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MODEL_PATH = "best.pt"
+GDRIVE_FILE_ID = "12FxZPRakPMVpDJ6yRQ9Wmcgy70lPfNC0"
+
+def ensure_model_downloaded():
+    if not os.path.exists(MODEL_PATH):
+        download_url = f"https://drive.google.com/uc?id={GDRIVE_FILE_ID}"
+        with st.spinner("Downloading model file for first-time setup..."):
+            gdown.download(download_url, MODEL_PATH, quiet=False)
 
 @st.cache_resource
 def load_models():
+    ensure_model_downloaded()
+
     yolo_inf = YOLO(MODEL_PATH)
+
     ckpt = torch.load(MODEL_PATH, map_location=DEVICE, weights_only=False)
     model = ckpt["model"] if isinstance(ckpt, dict) and "model" in ckpt else ckpt
     model = model.to(DEVICE).float().eval()
+
     for p in model.parameters():
         p.requires_grad_(True)
+
     return yolo_inf, model
 
 with st.spinner("Loading model and interface..."):
