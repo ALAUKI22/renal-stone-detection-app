@@ -1072,7 +1072,7 @@ st.markdown("""
 <div class="upload-card">
     <div class="upload-title">Upload Ultrasonography Images</div>
     <div class="upload-note">
-        Supported file types: JPG, JPEG, PNG. You may upload one or multiple images for project demonstration and analysis.
+        Supported file types: JPG, JPEG, PNG. You may upload one image for project demonstration and analysis.
     </div>
 </div>
 """, unsafe_allow_html=True)
